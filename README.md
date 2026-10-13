@@ -11,6 +11,12 @@ npm run dev
 
 Create a production bundle with `npm run build`, then serve it with `npm run preview`. `npm test` checks the spread model, page motion, and page content.
 
+## Deploy to GitHub Pages
+
+In the `AkhandSoni/ACM-OCS-proto` repository, open **Settings → Pages** and set **Source** to **GitHub Actions**. Push to `main` to run `.github/workflows/deploy.yml`, which installs dependencies, builds the app, and publishes only `dist/`. Keep `node_modules/` and `dist/` in `.gitignore`.
+
+The published address is `https://akhandsoni.github.io/ACM-OCS-proto/`. Production asset paths use `/ACM-OCS-proto/`, configured in `vite.config.ts`; development still uses `/`. Serving the unbuilt root `index.html` will not run the TypeScript app. If the repository name changes, update the production base path.
+
 ## Read and write
 
 Drag a sheet across the spine, scroll, or use the arrows to turn. The cover moves as a rigid sheet; interior pages bend while keeping their length. Choose a chapter from the book's index or chapter navigation. Bottom chapter buttons turn the intervening sheets at a brisk, visible pace, then slow down to land on the chosen chapter. On a phone, the Left page / Right page button changes which side you read.
