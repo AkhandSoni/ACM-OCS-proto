@@ -142,6 +142,13 @@ function readReadingState(): ReadingState {
 const readingState = readReadingState();
 function saveReadingState() { try { localStorage.setItem(readingKey, JSON.stringify(readingState)); } catch { /* Reading remains available without storage. */ } }
 let cameraCenter = W / 2, cameraDistance = 16, desiredDistance = 16, previousFrame = performance.now();
+function alignRibbon(angle: number) {
+  // Follow the back cover's hinge, including the offset beneath its surface.
+  const distance = W * .61;
+  const offset = -.12;
+  ribbon.position.set(distance * Math.cos(angle) - offset * Math.sin(angle), -H / 2 - .28, coverSlab.position.z + distance * Math.sin(angle) + offset * Math.cos(angle));
+  ribbon.rotation.y = -angle;
+}
 function applySpread(index: number) {
   const spread = spreads[index]; const l = leftPage.material as THREE.MeshStandardMaterial; const r = rightPage.material as THREE.MeshStandardMaterial;
   l.map = texture(spread.left, false, 'REVERSE'); r.map = texture(spread.right, false, 'FRONT'); l.needsUpdate = r.needsUpdate = true;
@@ -159,7 +166,7 @@ function applySpread(index: number) {
     materials[5].map = texture(backClosed ? 'back-cover' : spreads[1].left, false, 'REVERSE');
     materials[4].needsUpdate = materials[5].needsUpdate = true;
   }
-  ribbon.position.x = index === spreads.length - 1 ? -W * .61 : W * .61;
+  alignRibbon(index === spreads.length - 1 ? Math.PI : 0);
   document.querySelector<HTMLButtonElement>('#open-book')!.hidden = index > 0;
   document.querySelector<HTMLButtonElement>('#prev')!.disabled = index === 0;
   document.querySelector<HTMLButtonElement>('#next')!.disabled = index === spreads.length - 1;
@@ -211,7 +218,11 @@ function updateCurl() {
   const angle = Math.PI * (direction === 1 ? progress : 1 - progress);
   const sheetIndex = direction === 1 ? current : current - 1;
   const isCover = sheetIndex === 0 || sheetIndex === turningLeaves.length - 1;
-  if (isCover) { coverSlab.rotation.y = -angle; return; }
+  if (isCover) {
+    coverSlab.rotation.y = -angle;
+    alignRibbon(sheetIndex === turningLeaves.length - 1 ? angle : 0);
+    return;
+  }
   for (let j = 0; j < arr.count; j++) {
     const u = (j % 49) / 48; const v = Math.floor(j / 49) / 34; const x0 = u * W;
     // Outer paper follows the root with elastic lag; the hard cover stays rigid.

@@ -13,7 +13,7 @@ function getFunction(name) {
   const next = source.indexOf('\nfunction ', start + 1);
   return source.slice(start, next < 0 ? source.length : next).split('\nwindow.addEventListener')[0];
 }
-const names = ['applySpread', 'beginTurn', 'updateCurl', 'finishTurn', 'goTo', 'animateNavigation'];
+const names = ['alignRibbon', 'applySpread', 'beginTurn', 'updateCurl', 'finishTurn', 'goTo', 'animateNavigation'];
 const functions = names.map(getFunction).join('\n') + '\n' + source.slice(source.indexOf('function frame('), source.indexOf('\nfunction resize('));
 const code = ts.transpileModule(functions, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText;
 const controls = new Map();
